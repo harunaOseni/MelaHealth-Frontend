@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
+alert(API_BASE_URL);
 
 export const checkSymptoms = async (symptoms) => {
   try {
