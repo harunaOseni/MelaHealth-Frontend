@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import SymptomChecker from './pages/SymptomChecker';
 import Navbar from './components/Navbar';
+import WellnessTipsPage from './pages/WellnessTipsPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/symptom-checker" element={<SymptomChecker />} />
+            <Route path="/wellness-tips" element={<WellnessTipsPage />} />
           </Routes>
         </div>
       </div>

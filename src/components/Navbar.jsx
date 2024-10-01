@@ -5,9 +5,6 @@ import {
   FaStethoscope,
   FaLightbulb,
   FaMapMarkerAlt,
-  FaCalendarAlt,
-  FaChartPie,
-  FaRegFileAlt,
 } from 'react-icons/fa';
 
 const Navbar = () => {
