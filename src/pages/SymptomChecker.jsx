@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { FaPaperPlane } from 'react-icons/fa';
 import { checkSymptoms } from '../utils/api';
 
 const SymptomChecker = () => {
-  const [input, setInput] = useState('');
+  const location = useLocation();
+  const initialSymptom = location.state?.initialSymptom || '';
+  const [input, setInput] = useState(initialSymptom);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const lastSymptoms = localStorage.getItem('lastSymptoms');
-    if (lastSymptoms) {
-      setInput(lastSymptoms);
+    if (initialSymptom) {
+      handleSubmit({ preventDefault: () => {} });
     }
   }, []);
 
@@ -51,7 +53,6 @@ const SymptomChecker = () => {
     }
 
     setIsLoading(false);
-    localStorage.setItem('lastSymptoms', input);
     localStorage.setItem('symptomCheckerMessages', JSON.stringify(updatedMessages));
   };
 

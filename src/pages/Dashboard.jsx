@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import SymptomChecker from '../components/SymptomChecker';
 import WellnessTips from '../components/WellnessTips';
@@ -6,6 +7,7 @@ import LocalResources from '../components/LocalResources';
 
 const Dashboard = () => {
   const [userName, setUserName] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
@@ -13,6 +15,10 @@ const Dashboard = () => {
       setUserName(storedName);
     }
   }, []);
+
+  const handleSymptomInput = (input) => {
+    navigate('/symptom-checker', { state: { initialSymptom: input } });
+  };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -23,7 +29,7 @@ const Dashboard = () => {
           <div className="flex h-[calc(100%-4rem)] gap-6">
             <div className="w-1/2 flex flex-col gap-6">
               <div className="flex-1">
-                <SymptomChecker />
+                <SymptomChecker onSymptomInput={handleSymptomInput} />
               </div>
               <div className="flex-1">
                 <LocalResources />
