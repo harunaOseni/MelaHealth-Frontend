@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const LocalResourcesPage = () => {
   const resources = [
@@ -9,6 +9,10 @@ const LocalResourcesPage = () => {
     { name: 'Family Planning Clinic', address: '654 Maple Ln, Boroughville', type: 'Reproductive Health', phone: '(555) 147-2589' },
     { name: 'Nutrition Counseling', address: '987 Cedar Blvd, Villageopolis', type: 'Dietary Services', phone: '(555) 753-9514' },
   ];
+
+  useEffect(() => {
+    localStorage.setItem('localResources', JSON.stringify(resources));
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-yellow-900 to-yellow-200 ml-64">

@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const LocalResources = () => {
-  const resources = [
-    { name: 'Community Health Clinic', address: '123 Main St, Cityville', type: 'Clinic' },
-    { name: 'Wellness Center', address: '456 Elm St, Townsville', type: 'Health Program' },
-    { name: 'Mental Health Services', address: '789 Oak Rd, Villagetown', type: 'Counseling' },
-    // Add more resources as needed
-  ];
+  const [resources, setResources] = useState([]);
+
+  useEffect(() => {
+    const storedResources = localStorage.getItem('localResources');
+    if (storedResources) {
+      setResources(JSON.parse(storedResources));
+    } else {
+      const defaultResources = [
+        { name: 'Community Health Clinic', address: '123 Main St, Cityville', type: 'Clinic' },
+        { name: 'Wellness Center', address: '456 Elm St, Townsville', type: 'Health Program' },
+        { name: 'Mental Health Services', address: '789 Oak Rd, Villagetown', type: 'Counseling' },
+      ];
+      setResources(defaultResources);
+      localStorage.setItem('localResources', JSON.stringify(defaultResources));
+    }
+  }, []);
 
   return (
     <div className="bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-xl p-6 shadow-lg h-full flex flex-col">

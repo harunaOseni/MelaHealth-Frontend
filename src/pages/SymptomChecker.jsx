@@ -1,11 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaPaperPlane } from 'react-icons/fa';
+import { checkSymptoms } from '../utils/api';
 
 const SymptomChecker = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    const lastSymptoms = localStorage.getItem('lastSymptoms');
+    if (lastSymptoms) {
+      setInput(lastSymptoms);
+    }
+  }, []);
+
+  useEffect(() => {
+    const storedMessages = localStorage.getItem('symptomCheckerMessages');
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
+    }
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -18,26 +33,26 @@ const SymptomChecker = () => {
     if (!input.trim()) return;
 
     const userMessage = { type: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/symptom-checker', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
-      });
-      const data = await response.json();
-      const aiMessage = { type: 'ai', content: data.message };
-      setMessages(prev => [...prev, aiMessage]);
+      const diagnosis = await checkSymptoms(input);
+      const aiMessage = { type: 'ai', content: diagnosis };
+      updatedMessages.push(aiMessage);
+      setMessages(updatedMessages);
     } catch (error) {
       console.error('Error:', error);
       const errorMessage = { type: 'ai', content: 'Sorry, I encountered an error. Please try again.' };
-      setMessages(prev => [...prev, errorMessage]);
+      updatedMessages.push(errorMessage);
+      setMessages(updatedMessages);
     }
 
     setIsLoading(false);
+    localStorage.setItem('lastSymptoms', input);
+    localStorage.setItem('symptomCheckerMessages', JSON.stringify(updatedMessages));
   };
 
   return (

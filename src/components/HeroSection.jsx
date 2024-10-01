@@ -16,6 +16,7 @@ const HeroSection = () => {
       // Simulate a delay for the animation
       await new Promise(resolve => setTimeout(resolve, 3000));
       navigate('/dashboard', { state: { userName: name } });
+      localStorage.setItem('userName', name);
     }
   };
 
