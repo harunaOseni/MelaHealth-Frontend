@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import SymptomChecker from './pages/SymptomChecker';
 import Navbar from './components/Navbar';
 import WellnessTipsPage from './pages/WellnessTipsPage';
+import LocalResourcesPage from './pages/LocalResourcesPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/symptom-checker" element={<SymptomChecker />} />
             <Route path="/wellness-tips" element={<WellnessTipsPage />} />
+            <Route path="/local-resources" element={<LocalResourcesPage />} />
           </Routes>
         </div>
       </div>
