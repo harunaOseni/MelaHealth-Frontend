@@ -14,21 +14,36 @@ const SymptomChecker = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // Load messages from localStorage and ensure message.content is a string
+  useEffect(() => {
+    const storedMessages = localStorage.getItem('symptomCheckerMessages');
+    if (storedMessages) {
+      try {
+        const parsedMessages = JSON.parse(storedMessages).map((msg) => {
+          if (typeof msg.content === 'object' && msg.content.guidance) {
+            return { ...msg, content: msg.content.guidance };
+          }
+          return msg;
+        });
+        setMessages(parsedMessages);
+      } catch (error) {
+        console.error('Error parsing stored messages:', error);
+        // Clear corrupted messages
+        localStorage.removeItem('symptomCheckerMessages');
+      }
+    }
+  }, []);
+
+  // If there's an initial symptom passed via navigation, submit it automatically
   useEffect(() => {
     if (initialSymptom) {
       handleSubmit({ preventDefault: () => {} });
     }
-  }, []);
-
-  useEffect(() => {
-    const storedMessages = localStorage.getItem('symptomCheckerMessages');
-    if (storedMessages) {
-      setMessages(JSON.parse(storedMessages));
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(scrollToBottom, [messages]);
@@ -44,19 +59,27 @@ const SymptomChecker = () => {
     setIsLoading(true);
 
     try {
-      const diagnosis = await checkSymptoms(input);
-      const aiMessage = { type: 'ai', content: diagnosis };
-      updatedMessages.push(aiMessage);
-      setMessages(updatedMessages);
+      const response = await checkSymptoms(input);
+      // Ensure that response.guidance is a string
+      const guidance = typeof response.guidance === 'string' ? response.guidance : '';
+      const aiMessage = { type: 'ai', content: guidance };
+      const newMessages = [...updatedMessages, aiMessage];
+      setMessages(newMessages);
+      // Update localStorage with the new messages
+      localStorage.setItem('symptomCheckerMessages', JSON.stringify(newMessages));
     } catch (error) {
       console.error('Error:', error);
-      const errorMessage = { type: 'ai', content: 'Sorry, I encountered an error. Please try again.' };
-      updatedMessages.push(errorMessage);
-      setMessages(updatedMessages);
+      const errorMessage = {
+        type: 'ai',
+        content: 'Sorry, I encountered an error. Please try again.',
+      };
+      const newMessages = [...updatedMessages, errorMessage];
+      setMessages(newMessages);
+      // Update localStorage with the error message
+      localStorage.setItem('symptomCheckerMessages', JSON.stringify(newMessages));
     }
 
     setIsLoading(false);
-    localStorage.setItem('symptomCheckerMessages', JSON.stringify(updatedMessages));
   };
 
   const toggleNavbar = () => {
@@ -79,9 +102,22 @@ const SymptomChecker = () => {
             </div>
             <div className="space-y-4 mb-4">
               {messages.map((message, index) => (
-                <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg p-3 ${message.type === 'user' ? 'bg-yellow-600 text-black backdrop-filter backdrop-blur-lg' : 'bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg'}`}>
-                    {message.content}
+                <div
+                  key={index}
+                  className={`flex ${
+                    message.type === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  <div
+                    className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg p-3 ${
+                      message.type === 'user'
+                        ? 'bg-yellow-600 text-black backdrop-filter backdrop-blur-lg'
+                        : 'bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg'
+                    }`}
+                  >
+                    {typeof message.content === 'object'
+                      ? message.content.guidance
+                      : message.content}
                   </div>
                 </div>
               ))}
